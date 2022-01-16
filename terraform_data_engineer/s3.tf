@@ -11,6 +11,6 @@ resource "aws_s3_bucket" "lakeformation" {
   bucket = "chad-upjohn-${var.bucket_name_addition}-lakeformation"
 }
 
-resource "aws_s3_bucket" "lakeformation_temp" {
-  bucket = "chad-upjohn-${var.bucket_name_addition}-lakeformation-temp"
+resource "aws_lakeformation_resource" "governed" {
+  arn = aws_s3_bucket.lakeformation.arn
 }
