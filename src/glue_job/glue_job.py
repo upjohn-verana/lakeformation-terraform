@@ -4,54 +4,45 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from pyspark.sql.functions import lit
 
-bucket = "chad-upjohn-20220101-lakeformation"
+"""
+Need to create a db and table for running this
 
+db: chad-db
+table: source_files
+"""
+
+# @params: [JOB_NAME]
 args = getResolvedOptions(sys.argv, ["JOB_NAME"])
-
 sc = SparkContext.getOrCreate()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
-
 job = Job(glueContext)
+job.init(args["JOB_NAME"], args)
 
+bucket = "chad-upjohn-20220101-lakeformation"
 
-def define_source_path(bucket: str) -> str:
-    path = f"s3://{bucket}/source_files/"
-    return path
+db = "chad-db"
+table = "source_files"
+print(f"Start dynamic thing: {dict(db=db, table=table)}")
 
+tx_id = glueContext.start_transaction(False)
 
-def define_destination_path(bucket: str) -> str:
-    path = f"s3a://{bucket}/destination_files/"
-    return path
+datasource0 = glueContext.create_dynamic_frame.from_catalog(
+    database=db, table_name=table, transformation_ctx="datasource0"
+)
+print(datasource0.show())
 
+dest_path = f"s3://{bucket}/new_destination/"
 
-def main():
-    source = define_source_path(bucket)
-    print(f"Defined source path: {dict(source_path=source)}")
-    destination = define_destination_path(bucket)
-    print(f"Defined destination path: {dict(destionation_path=destination)}")
+sink = glueContext.getSink(connection_type="s3", path=dest_path, enableUpdateCatalog=True, transactionId=tx_id)
+sink.setFormat("glueparquet")
+sink.setCatalogInfo(catalogDatabase="retail", catalogTableName="destionation_table")
 
-    print("Start")
-    df = spark.read.csv(
-        source,
-        sep=",",
-        inferSchema=True,
-        encoding="latin1",
-        header=True,
-        mode="PERMISSIVE",
-    )
-
-    df = df.withColumn("error_record", lit("what"))
-
-    df.write.mode("overwrite").parquet(destination)
-
-
-if __name__ == "__main__":
-    job.init(args["JOB_NAME"], args)
-    logger = glueContext.get_logger()
-    print("Look at me")
-    logger.info("Hey there")
-    main()
-    job.commit()
+try:
+    sink.writeFrame(datasource0)
+    glueContext.commit_transaction(tx_id)
+except Exception:
+    glueContext.cancel_transaction(tx_id)
+    raise
+job.commit()
