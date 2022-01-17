@@ -13,6 +13,24 @@ data "aws_iam_policy_document" "s3" {
   }
 }
 
+data "aws_iam_policy_document" "logs" {
+  statement {
+    resources = ["*"]
+    actions   = ["logs:*"]
+  }
+}
+
+resource "aws_iam_policy" "logs" {
+  name   = "logs_glue"
+  policy = data.aws_iam_policy_document.logs.json
+}
+
+resource "aws_iam_policy_attachment" "logs_attach" {
+  name       = "logs_attached"
+  roles      = [aws_iam_role.glue_role.name]
+  policy_arn = aws_iam_policy.logs.arn
+}
+
 resource "aws_iam_user" "data_engineer" {
   name = "data_engineer"
 }
