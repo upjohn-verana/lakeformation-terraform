@@ -1,0 +1,4 @@
+[flake8]
+max-line-length = 120
+exclude = "terraform, sql-scripts"
+ignore = "E203, E501, W503"

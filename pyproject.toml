@@ -1,3 +1,27 @@
+[tool.poetry]
+name = "glue_cloud_guru"
+version = "0.1.0"
+description = "messsing around with glue on cloud guru"
+authors = ["Chad Upjohn <chad.upjohn@veranahealth.com>"]
+
+[tool.poetry.dependencies]
+python = "~3.7"
+botocore = "1.20.100"
+boto3 = "1.17.100"
+
+[tool.poetry.dev-dependencies]
+isort = "^5.10.1"
+black = "^21.10b0"
+pytest = "^6.2.5"
+ipython = "^7.29.0"
+jupyter = "^1.0.0"
+flake8 = "^4.0.1"
+pdbpp = "^0.10.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.isort]
 src_paths = ["tests"]
 multi_line_output=3
