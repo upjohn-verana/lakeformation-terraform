@@ -13,7 +13,6 @@ args = getResolvedOptions(sys.argv, ["JOB_NAME"])
 sc = SparkContext.getOrCreate()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
-
 # job = Job(glueContext)
 
 
@@ -53,7 +52,12 @@ if __name__ == "__main__":
 
     print("Look at me")
     logger = glueContext.get_logger()
-    logger.info("Hey there")
+    logger.info("A gluelogger: Hey there")
+
+    log4jLogger = spark._jvm.org.apache.log4j
+    log_4j = log4jLogger.LogManager.getLogger(__name__)
+    log_4j.warn("Log4j: Hello World!")
+    print("Adding log4j thing")
 
     main()
     # job.commit()
