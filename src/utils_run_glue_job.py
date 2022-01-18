@@ -2,7 +2,7 @@ import time
 
 import boto3
 
-account_number = "842358407556"
+account_number = "830978417405"
 bucket = "chad-upjohn-20220101-lakeformation"
 glue_job_name = "cloud_guru_glue_job"
 

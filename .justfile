@@ -1,6 +1,8 @@
 default:
     @just --list
 
+terraform_fresh_start: terraform_clean terraform_apply copy_one_csv
+
 terraform_init:
     cd ./terraform && \
     AWS_PROFILE=cloud_guru terraform init
@@ -17,7 +19,7 @@ terraform_clean:
     rm ./terraform/terraform.tfstate*
 
 copy_one_csv:
-    aws s3 cp one.csv s3://chad-upjohn-20220101-lakeformation/
+    aws s3 cp src/one.csv s3://chad-upjohn-20220101-lakeformation/
 
 run_glue:
     AWS_PROFILE=cloud_guru poetry run python src/run_glue_job.py
