@@ -2,7 +2,7 @@ import time
 
 import boto3
 
-account_number = "830978417405"
+account_number = "896780291283"
 bucket = "chad-upjohn-20220101-lakeformation"
 glue_job_name = "cloud_guru_glue_job"
 
@@ -26,6 +26,9 @@ def get_glue_jobs():
 
 
 def create_glue_job():
+    third_party_packages = ",".join(["loguru==0.5.3", "pdbpp==0.10.3"])
+    utils_zip = f"s3://{bucket}/glue_script/glue_utils/glue_utils.zip"
+
     glue = get_glue_client()
     glue.create_job(
         Name=glue_job_name,
@@ -42,6 +45,8 @@ def create_glue_job():
             "--enable-metrics": "",
             "--job-bookmark-option": "job-bookmark-disable",
             "--job-language": "python",
+            "--additional-python-modules": third_party_packages,
+            "--extra-py-files": utils_zip,
         },
         MaxRetries=0,
         Timeout=2880,

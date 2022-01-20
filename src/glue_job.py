@@ -2,6 +2,8 @@ import sys
 
 from awsglue.context import GlueContext
 from awsglue.utils import getResolvedOptions
+from glue_utils.glue_util import define_source_path
+from loguru import logger
 from pyspark.context import SparkContext
 from pyspark.sql.functions import lit
 
@@ -16,11 +18,6 @@ spark = glueContext.spark_session
 # job = Job(glueContext)
 
 
-def define_source_path(bucket: str) -> str:
-    path = f"s3://{bucket}/source_files/"
-    return path
-
-
 def define_destination_path(bucket: str) -> str:
     path = f"s3a://{bucket}/destination_files/"
     return path
@@ -28,11 +25,11 @@ def define_destination_path(bucket: str) -> str:
 
 def main():
     source = define_source_path(bucket)
-    print(f"Defined source path: {dict(source_path=source)}")
+    logger.info(f"Defined source path: {dict(source_path=source)}")
     destination = define_destination_path(bucket)
-    print(f"Defined destination path: {dict(destionation_path=destination)}")
+    logger.info(f"Defined destination path: {dict(destionation_path=destination)}")
 
-    print("Start")
+    logger.info("Start")
     df = spark.read.csv(
         source,
         sep=",",
@@ -50,14 +47,16 @@ def main():
 if __name__ == "__main__":
     # job.init(args["JOB_NAME"], args)
 
-    print("Look at me")
-    logger = glueContext.get_logger()
-    logger.info("A gluelogger: Hey there")
+    logger.warning("Look at me")
+    glue_logger = glueContext.get_logger()
+    glue_logger.info("A gluelogger: Hey there")
 
     log4jLogger = spark._jvm.org.apache.log4j
     log_4j = log4jLogger.LogManager.getLogger(__name__)
     log_4j.warn("Log4j: Hello World!")
-    print("Adding log4j thing")
+
+    logger.info("Loguru forever")
+    logger.debug("Adding loguru")
 
     main()
     # job.commit()
