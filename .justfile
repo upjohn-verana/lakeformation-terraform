@@ -30,3 +30,6 @@ zip_utils:
 
 run_glue:
     AWS_PROFILE=cloud_guru poetry run python local_scripts/run_glue_job.py
+
+tests:
+    PYTHONPATH=src poetry run pytest --JOB_NAME tt

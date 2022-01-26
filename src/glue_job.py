@@ -18,6 +18,10 @@ spark = glueContext.spark_session
 # job = Job(glueContext)
 
 
+def for_test():
+    return 1
+
+
 def define_destination_path(bucket: str) -> str:
     path = f"s3a://{bucket}/destination_files/"
     return path
